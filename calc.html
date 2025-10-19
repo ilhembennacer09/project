@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+
+    <style>
+         :root {
+            --primary-color: #724067;
+            --secondary-color: #724067;
+            --accent-color: #724067;
+            --warning-color: #ca6eb6;
+            --danger-color: #724067;
+            --dark-color: #382634;
+            --light-color: #f5f5f5;
+            --display-bg: #3b2b38;
+            --button-bg: #37474f;
+            --button-hover: #94177d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.2s ease;
+            --tab-active: #5a114a;
+            --tab-inactive: #49083d;
+        }
+        
+        [data-theme="dark"] {
+            --primary-color: #724067;
+            --secondary-color: #724067;
+            --accent-color: #ca6eb6;
+            --warning-color: #6e1f5d;
+            --danger-color: #926f8b;
+            --dark-color: #121212;
+            --light-color: #1e1e1e;
+            --display-bg: #3b2b38;
+            --button-bg: #252525;
+            --button-hover: #333;
+            --tab-active: #724067;
+            --tab-inactive: #252525;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--light-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+        
+        .calculator-container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+        }
+        
+        .calculator {
+            background: var(--dark-color);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            overflow: hidden;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .title {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .theme-toggle:hover {
+            color: var(--accent-color);
+        }
+        
+        #display {
+            width: 100%;
+            height: 80px;
+            font-size: 2rem;
+            text-align: left;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 10px;
+            background: var(--display-bg);
+            color: white;
+            direction: ltr;
+            transition: var(--transition);
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+            gap: 5px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 8px;
+            text-align: center;
+            background: var(--tab-inactive);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            background: var(--tab-active);
+            transform: translateY(-2px);
+        }
+        
+        .tab:hover {
+            background: var(--tab-active);
+        }
+        
+        .main-container {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .basic-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            width: 60%;
+        }
+        
+        .advanced-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 40%;
+        }
+        
+        button {
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--button-bg);
+            color: white;
+            box-shadow: var(--shadow);
+            padding: 15px 0;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            background: var(--button-hover);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .number {
+            background: #424242;
+        }
+        
+        .operator {
+            background: var(--primary-color);
+        }
+        
+        .function {
+            background: var(--secondary-color);
+        }
+        
+        .equals {
+            background: var(--accent-color);
+        }
+        
+        .clear {
+            background: var(--danger-color);
+        }
+        
+        .memory {
+            background: var(--warning-color);
+            color: #000;
+        }
+        
+        .scientific {
+            background: #616161;
+            font-size: 0.9rem;
+        }
+        
+        .programmer {
+            background: #616161;
+            font-size: 0.9rem;
+        }
+        
+        .statistics {
+            background: #616161;
+            font-size: 0.9rem;
+        }
+        
+        .zero {
+            grid-column: span 2;
+        }
+        
+        .history-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            z-index: 10;
+        }
+        
+        .history-panel {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: var(--dark-color);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 5;
+        }
+        
+        .history-panel.show {
+            transform: translateX(300px);
+        }
+        
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            cursor: pointer;
+        }
+        
+        .history-item:hover {
+            background: #444;
+        }
+        
+        .angle-mode {
+            position: relative;
+        }
+        
+        .angle-indicator {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .basic-buttons,
+            .advanced-buttons {
+                width: 100%;
+            }
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="history-btn" id="historyBtn">
+        <i class="fas fa-history"></i>
+    </button>
+
+    <div class="history-panel" id="historyPanel">
+        <h3>Calculation History</h3>
+        <div id="historyItems"></div>
+    </div>
+
+    <div class="calculator-container">
+        <div class="calculator" id="calculator">
+            <div class="header">
+                <div class="title">Multi-Functional Calculator</div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+
+            <input type="text" id="display" readonly value="0" />
+
+            <div class="tabs">
+                <button class="tab active" id="scientificTab">Scientific</button>
+                <button class="tab" id="programmerTab">Programmer</button>
+                <button class="tab" id="statisticsTab">Statistics</button>
+            </div>
+
+            <div class="main-container">
+                <div class="basic-buttons">
+
+                    <button class="clear" onclick="clearDisplay()">AC</button>
+                    <button class="function" onclick="deleteLast()"><i class="fas fa-backspace"></i></button>
+                    <button class="function" onclick="append('%')">%</button>
+                    <button class="operator" onclick="append('/')">÷</button>
+
+                    <button class="number" onclick="append('7')">7</button>
+                    <button class="number" onclick="append('8')">8</button>
+                    <button class="number" onclick="append('9')">9</button>
+                    <button class="operator" onclick="append('*')">×</button>
+
+                    <button class="number" onclick="append('4')">4</button>
+                    <button class="number" onclick="append('5')">5</button>
+                    <button class="number" onclick="append('6')">6</button>
+                    <button class="operator" onclick="append('-')">−</button>
+
+                    <button class="number" onclick="append('1')">1</button>
+                    <button class="number" onclick="append('2')">2</button>
+                    <button class="number" onclick="append('3')">3</button>
+                    <button class="operator" onclick="append('+')">+</button>
+
+                    <button class="number zero" onclick="append('0')">0</button>
+                    <button class="number" onclick="append('.')">.</button>
+                    <button class="equals" onclick="calculate()">=</button>
+                    <button class="memory" onclick="memoryRecall()">MR</button>
+                </div>
+
+                <div class="advanced-buttons" id="scientificButtons">
+
+                    <button class="scientific" onclick="append('sin(')">sin</button>
+                    <button class="scientific" onclick="append('cos(')">cos</button>
+                    <button class="scientific" onclick="append('tan(')">tan</button>
+
+                    <button class="scientific" onclick="append('sqrt(')">√</button>
+                    <button class="scientific" onclick="append('^2')">x²</button>
+                    <button class="scientific" onclick="append('^3')">x³</button>
+
+                    <button class="scientific" onclick="append('log(')">log</button>
+                    <button class="scientific" onclick="append('ln(')">ln</button>
+                    <button class="scientific" onclick="append('pi')">π</button>
+
+                    <button class="scientific" onclick="append('(')">(</button>
+                    <button class="scientific" onclick="append(')')">)</button>
+                    <button class="scientific" onclick="append('^')">x^y</button>
+
+                    <button class="scientific angle-mode" onclick="toggleAngle()">
+                        Rad
+                        <span class="angle-indicator" id="angleIndicator">RAD</span>
+                    </button>
+                    <button class="scientific" onclick="toggleSign()">±</button>
+                    <button class="scientific" onclick="factorial()">x!</button>
+
+                    <button class="scientific" onclick="append('e')">e</button>
+                    <button class="scientific" onclick="append('10^')">10^x</button>
+                    <button class="scientific" onclick="append('rand()')">Rand</button>
+
+                    <button class="memory" onclick="memoryAdd()">M+</button>
+                    <button class="memory" onclick="memorySubtract()">M-</button>
+                    <button class="scientific" onclick="append('1/')">1/x</button>
+
+                    <button class="scientific" onclick="append('EE')">EE</button>
+                    <button class="scientific" onclick="append('exp(')">e^x</button>
+                    <button class="scientific" onclick="append('cbrt(')">∛x</button>
+                </div>
+
+                <div class="advanced-buttons" id="programmerButtons" style="display:none">
+
+                    <button class="programmer" onclick="append('0b')">BIN</button>
+                    <button class="programmer" onclick="append('0o')">OCT</button>
+                    <button class="programmer" onclick="append('0x')">HEX</button>
+
+                    <button class="programmer" onclick="append('~')">NOT</button>
+                    <button class="programmer" onclick="append('&')">AND</button>
+                    <button class="programmer" onclick="append('|')">OR</button>
+
+                    <button class="programmer" onclick="append('^')">XOR</button>
+                    <button class="programmer" onclick="append('<<')"><<</button>
+                    <button class="programmer" onclick="append('>>')">>></button>
+
+                    <button class="programmer" onclick="append('0xFF')">0xFF</button>
+                    <button class="programmer" onclick="append('0b1010')">0b1010</button>
+                    <button class="programmer" onclick="append('0o77')">0o77</button>
+
+                    <button class="programmer" onclick="convertBase('bin')">toBIN</button>
+                    <button class="programmer" onclick="convertBase('oct')">toOCT</button>
+                    <button class="programmer" onclick="convertBase('hex')">toHEX</button>
+
+                    <button class="programmer" onclick="append('0x')">0x</button>
+                    <button class="programmer" onclick="append('0b')">0b</button>
+                    <button class="programmer" onclick="append('0o')">0o</button>
+
+                    <button class="programmer" onclick="append('0xFFFF')">0xFFFF</button>
+                    <button class="programmer" onclick="append('0b1111')">0b1111</button>
+                    <button class="programmer" onclick="append('0o777')">0o777</button>
+                </div>
+
+                <div class="advanced-buttons" id="statisticsButtons" style="display:none">
+
+                    <button class="statistics" onclick="calculateMean()">Mean</button>
+                    <button class="statistics" onclick="calculateMedian()">Median</button>
+                    <button class="statistics" onclick="calculateMode()">Mode</button>
+
+                    <button class="statistics" onclick="calculateStdDev()">StDev</button>
+                    <button class="statistics" onclick="calculateVariance()">Var</button>
+                    <button class="statistics" onclick="calculateSum()">Sum</button>
+
+                    <button class="statistics" onclick="addToDataset()">Add Data</button>
+                    <button class="statistics" onclick="clearDataset()">Clear Data</button>
+                    <button class="statistics" onclick="showDataset()">Show Data</button>
+
+                    <button class="statistics" onclick="append('fact(')">n!</button>
+                    <button class="statistics" onclick="append('perm(')">nPr</button>
+                    <button class="statistics" onclick="append('comb(')">nCr</button>
+
+                    <button class="statistics" onclick="append('randInt(')">RandInt</button>
+                    <button class="statistics" onclick="append('norm(')">Norm</button>
+                    <button class="statistics" onclick="append('corr(')">Corr</button>
+
+                    <button class="statistics" onclick="append('linReg(')">LinReg</button>
+                    <button class="statistics" onclick="append('expReg(')">ExpReg</button>
+                    <button class="statistics" onclick="append('logReg(')">LogReg</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const display = document.getElementById("display");
+        const themeToggle = document.getElementById("themeToggle");
+        const calculator = document.getElementById("calculator");
+        const historyBtn = document.getElementById("historyBtn");
+        const historyPanel = document.getElementById("historyPanel");
+        const historyItems = document.getElementById("historyItems");
+        const angleIndicator = document.getElementById("angleIndicator");
+        const scientificTab = document.getElementById("scientificTab");
+        const programmerTab = document.getElementById("programmerTab");
+        const statisticsTab = document.getElementById("statisticsTab");
+        const scientificButtons = document.getElementById("scientificButtons");
+        const programmerButtons = document.getElementById("programmerButtons");
+        const statisticsButtons = document.getElementById("statisticsButtons");
+
+        // States
+        let memory = 0;
+        let angleInRadians = true;
+        let history = [];
+        let isDarkMode = false;
+        let currentMode = 'scientific';
+        let dataset = [];
+
+
+        function loadSettings() {
+            const savedMode = localStorage.getItem('calculatorMode');
+            if (savedMode === 'dark') {
+                toggleTheme();
+            }
+
+            const savedHistory = localStorage.getItem('calculatorHistory');
+            if (savedHistory) {
+                history = JSON.parse(savedHistory);
+                renderHistory();
+            }
+
+            const savedCalcMode = localStorage.getItem('calculatorViewMode');
+            if (savedCalcMode) {
+                switchMode(savedCalcMode);
+            }
+        }
+
+
+        function saveSettings() {
+            localStorage.setItem('calculatorMode', isDarkMode ? 'dark' : 'light');
+            localStorage.setItem('calculatorHistory', JSON.stringify(history));
+            localStorage.setItem('calculatorViewMode', currentMode);
+        }
+
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : '');
+            themeToggle.innerHTML = isDarkMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            saveSettings();
+        }
+
+
+        function switchMode(mode) {
+            currentMode = mode;
+
+
+            scientificTab.classList.remove('active');
+            programmerTab.classList.remove('active');
+            statisticsTab.classList.remove('active');
+
+
+            scientificButtons.style.display = 'none';
+            programmerButtons.style.display = 'none';
+            statisticsButtons.style.display = 'none';
+
+
+            if (mode === 'scientific') {
+                scientificTab.classList.add('active');
+                scientificButtons.style.display = 'grid';
+            } else if (mode === 'programmer') {
+                programmerTab.classList.add('active');
+                programmerButtons.style.display = 'grid';
+            } else if (mode === 'statistics') {
+                statisticsTab.classList.add('active');
+                statisticsButtons.style.display = 'grid';
+            }
+
+            saveSettings();
+        }
+
+
+        function toggleAngle() {
+            angleInRadians = !angleInRadians;
+            angleIndicator.textContent = angleInRadians ? 'RAD' : 'DEG';
+        }
+
+
+        function clearDisplay() {
+            display.value = '0';
+        }
+
+
+        function append(value) {
+            if (display.value === '0' && value !== '.') {
+                display.value = '';
+            }
+
+
+            if (value === '.') {
+                const currentNumber = getCurrentNumber();
+                if (currentNumber.includes('.')) return;
+            }
+
+            display.value += value;
+        }
+
+
+        function getCurrentNumber() {
+            let currentNumber = '';
+            for (let i = display.value.length - 1; i >= 0; i--) {
+                const c = display.value[i];
+                if ('0123456789.'.includes(c)) {
+                    currentNumber = c + currentNumber;
+                } else {
+                    break;
+                }
+            }
+            return currentNumber;
+        }
+
+
+        function deleteLast() {
+            if (display.value.length > 1) {
+                display.value = display.value.slice(0, -1);
+            } else {
+                display.value = '0';
+            }
+        }
+
+
+        function toggleSign() {
+            if (display.value) {
+                display.value = display.value.startsWith('-') ?
+                    display.value.substring(1) :
+                    '-' + display.value;
+            }
+        }
+
+
+        function memoryAdd() {
+            memory += parseFloat(display.value || "0");
+            showToast(`Added to memory: ${memory}`);
+        }
+
+        function memorySubtract() {
+            memory -= parseFloat(display.value || "0");
+            showToast(`Subtracted from memory: ${memory}`);
+        }
+
+        function memoryRecall() {
+            display.value = memory.toString();
+        }
+
+
+        function factorial() {
+            const n = parseInt(display.value);
+            if (n < 0 || isNaN(n)) {
+                showError("Factorial error");
+                return;
+            }
+
+            let result = 1;
+            for (let i = 1; i <= n; i++) result *= i;
+            display.value = result;
+            addToHistory(`${n}! = ${result}`);
+        }
+
+
+        function convertBase(base) {
+            const number = parseInt(display.value);
+            if (isNaN(number)) {
+                showError("Invalid value for conversion");
+                return;
+            }
+
+            let result;
+            switch (base) {
+                case "bin":
+                    result = number.toString(2);
+                    break;
+                case "oct":
+                    result = number.toString(8);
+                    break;
+                case "dec":
+                    result = number.toString(10);
+                    break;
+                case "hex":
+                    result = number.toString(16).toUpperCase();
+                    break;
+            }
+
+            display.value = result;
+            addToHistory(`Convert ${number} to ${base}: ${result}`);
+        }
+
+
+        function calculate() {
+            try {
+                const expression = display.value;
+                const result = evaluateExpression(expression);
+
+                if (isNaN(result)) {
+                    throw new Error("Undefined result");
+                }
+
+                display.value = result;
+                addToHistory(`${expression} = ${result}`);
+            } catch (e) {
+                showError("Calculation error");
+                console.error(e);
+            }
+        }
+
+
+        function evaluateExpression(expr) {
+
+            expr = expr.replace(/pi/g, Math.PI)
+                .replace(/e/g, Math.E);
+
+            expr = expr.replace(/sin\(([^)]+)\)/g, (_, x) =>
+                Math.sin(angleInRadians ? parseFloat(x) : parseFloat(x) * Math.PI / 180));
+
+            expr = expr.replace(/cos\(([^)]+)\)/g, (_, x) =>
+                Math.cos(angleInRadians ? parseFloat(x) : parseFloat(x) * Math.PI / 180));
+
+            expr = expr.replace(/tan\(([^)]+)\)/g, (_, x) =>
+                Math.tan(angleInRadians ? parseFloat(x) : parseFloat(x) * Math.PI / 180));
+
+
+            expr = expr.replace(/log\(([^)]+)\)/g, (_, x) => Math.log10(parseFloat(x)));
+            expr = expr.replace(/ln\(([^)]+)\)/g, (_, x) => Math.log(parseFloat(x)));
+            expr = expr.replace(/exp\(([^)]+)\)/g, (_, x) => Math.exp(parseFloat(x)));
+            expr = expr.replace(/10\^([^)]*)/g, (_, x) => Math.pow(10, parseFloat(x || 0)));
+            expr = expr.replace(/e\^([^)]*)/g, (_, x) => Math.exp(parseFloat(x || 0)));
+
+
+            expr = expr.replace(/\^2/g, '**2');
+            expr = expr.replace(/\^3/g, '**3');
+            expr = expr.replace(/\^/g, '**');
+            expr = expr.replace(/sqrt\(([^)]+)\)/g, (_, x) => Math.sqrt(parseFloat(x)));
+            expr = expr.replace(/cbrt\(([^)]+)\)/g, (_, x) => Math.cbrt(parseFloat(x)));
+            expr = expr.replace(/1\//g, '1/');
+
+
+            expr = expr.replace(/~/g, '~');
+            expr = expr.replace(/&/g, '&');
+            expr = expr.replace(/\|/g, '|');
+            expr = expr.replace(/\^/g, '^');
+            expr = expr.replace(/<</g, '<<');
+            expr = expr.replace(/>>/g, '>>');
+
+
+            expr = expr.replace(/%/g, '/100');
+
+
+            expr = expr.replace(/rand\(\)/g, Math.random());
+            expr = expr.replace(/randInt\(([^)]+)\)/g, (_, x) => Math.floor(Math.random() * parseFloat(x)));
+
+
+            expr = expr.replace(/0b([01]+)/g, (_, x) => parseInt(x, 2));
+            expr = expr.replace(/0o([0-7]+)/g, (_, x) => parseInt(x, 8));
+            expr = expr.replace(/0x([0-9a-fA-F]+)/g, (_, x) => parseInt(x, 16));
+
+
+            return Function(`'use strict'; return (${expr})`)();
+        }
+
+
+        function addToHistory(item) {
+            history.unshift(item);
+            if (history.length > 20) history.pop();
+            renderHistory();
+            saveSettings();
+        }
+
+
+        function renderHistory() {
+            historyItems.innerHTML = history.map(item =>
+                `<div class="history-item" onclick="useHistoryItem('${item.split(' = ')[0]}')">${item}</div>`
+            ).join('');
+        }
+
+
+        function useHistoryItem(expr) {
+            display.value = expr;
+            toggleHistoryPanel();
+        }
+
+
+        function toggleHistoryPanel() {
+            historyPanel.classList.toggle('show');
+        }
+
+        function showError(message) {
+            display.value = message;
+            setTimeout(() => {
+                if (display.value === message) {
+                    display.value = '0';
+                }
+            }, 1500);
+        }
+
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.backgroundColor = 'rgba(0,0,0,0.7)';
+            toast.style.color = 'white';
+            toast.style.padding = '10px 20px';
+            toast.style.borderRadius = '5px';
+            toast.style.zIndex = '1000';
+            toast.style.transition = 'opacity 0.5s';
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 2000);
+        }
+
+
+        function addToDataset() {
+            const value = parseFloat(display.value);
+            if (!isNaN(value)) {
+                dataset.push(value);
+                showToast(`Added ${value} to dataset`);
+                display.value = '0';
+            } else {
+                showError("Invalid value");
+            }
+        }
+
+        function clearDataset() {
+            dataset = [];
+            showToast("Dataset cleared");
+        }
+
+        function showDataset() {
+            if (dataset.length === 0) {
+                showToast("Dataset is empty");
+            } else {
+                display.value = dataset.join(', ');
+            }
+        }
+
+        function calculateMean() {
+            if (dataset.length === 0) {
+                showError("No data available");
+                return;
+            }
+            const sum = dataset.reduce((a, b) => a + b, 0);
+            const mean = sum / dataset.length;
+            display.value = mean;
+            addToHistory(`Mean = ${mean}`);
+        }
+
+        function calculateMedian() {
+            if (dataset.length === 0) {
+                showError("No data available");
+                return;
+            }
+            const sorted = [...dataset].sort((a, b) => a - b);
+            const middle = Math.floor(sorted.length / 2);
+            const median = sorted.length % 2 === 0 ?
+                (sorted[middle - 1] + sorted[middle]) / 2 :
+                sorted[middle];
+            display.value = median;
+            addToHistory(`Median = ${median}`);
+        }
+
+        function calculateMode() {
+            if (dataset.length === 0) {
+                showError("No data available");
+                return;
+            }
+            const frequency = {};
+            dataset.forEach(num => {
+                frequency[num] = (frequency[num] || 0) + 1;
+            });
+            let maxFrequency = 0;
+            let modes = [];
+            for (const num in frequency) {
+                if (frequency[num] > maxFrequency) {
+                    modes = [num];
+                    maxFrequency = frequency[num];
+                } else if (frequency[num] === maxFrequency) {
+                    modes.push(num);
+                }
+            }
+            display.value = modes.join(', ');
+            addToHistory(`Mode = ${modes.join(', ')}`);
+        }
+
+        function calculateSum() {
+            if (dataset.length === 0) {
+                showError("No data available");
+                return;
+            }
+            const sum = dataset.reduce((a, b) => a + b, 0);
+            display.value = sum;
+            addToHistory(`Sum = ${sum}`);
+        }
+
+        function calculateVariance() {
+            if (dataset.length === 0) {
+                showError("No data available");
+                return;
+            }
+            const mean = dataset.reduce((a, b) => a + b, 0) / dataset.length;
+            const variance = dataset.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / dataset.length;
+            display.value = variance;
+            addToHistory(`Variance = ${variance}`);
+        }
+
+        function calculateStdDev() {
+            if (dataset.length === 0) {
+                showError("No data available");
+                return;
+            }
+            const mean = dataset.reduce((a, b) => a + b, 0) / dataset.length;
+            const variance = dataset.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / dataset.length;
+            const stdDev = Math.sqrt(variance);
+            display.value = stdDev;
+            addToHistory(`StdDev = ${stdDev}`);
+        }
+
+        function initEvents() {
+            themeToggle.addEventListener('click', toggleTheme);
+            historyBtn.addEventListener('click', toggleHistoryPanel);
+
+
+            scientificTab.addEventListener('click', () => switchMode('scientific'));
+            programmerTab.addEventListener('click', () => switchMode('programmer'));
+            statisticsTab.addEventListener('click', () => switchMode('statistics'));
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key >= '0' && e.key <= '9') append(e.key);
+                else if (e.key === '.') append('.');
+                else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') append(e.key);
+                else if (e.key === 'Enter' || e.key === '=') calculate();
+                else if (e.key === 'Escape') clearDisplay();
+                else if (e.key === 'Backspace') deleteLast();
+            });
+        }
+
+
+        function init() {
+            loadSettings();
+            initEvents();
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
